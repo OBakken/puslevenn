@@ -267,7 +267,8 @@ function CreateScreen({ onPreview }) {
                 const txt = sender
                   ? `${sender} har laget en bildeoverraskelse til deg! 🧩✨ Trykk her for å åpne den: ${shareUrl}`
                   : `Du har fått en bildeoverraskelse! 🧩✨ Trykk her for å åpne den: ${shareUrl}`;
-                window.open(`sms:?body=${encodeURIComponent(txt)}`);
+                const sep = /iPad|iPhone|iPod/.test(navigator.userAgent) ? "&" : "?";
+                window.open(`sms:${sep}body=${encodeURIComponent(txt)}`);
               }} style={S.shr}>SMS</button>
             </div>
 
@@ -409,6 +410,7 @@ function SolveScreen({ imgUrl, config, msg, sender, onReveal }) {
       <div ref={area} style={{
         position: "relative", width: boardW + 28, margin: "0 auto",
         minHeight: bT + boardH + tRows*(cellH*.88+14) + 80, touchAction: "none",
+        WebkitUserSelect: "none", userSelect: "none", overscrollBehavior: "none",
       }}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"6px 4px 0",zIndex:999,position:"relative"}}>
           <div>
