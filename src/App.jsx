@@ -301,7 +301,7 @@ function SolveScreen({ imgUrl, config, msg, sender, onReveal }) {
   const [zTop, setZTop] = useState(total + 1);
   const [uid, setUid] = useState(() => Math.random().toString(36).slice(2,8));
   const [timer, setTimer] = useState(0);
-  const dr = useRef(null), area = useRef(null), tmr = useRef(null);
+  const dr = useRef(null), area = useRef(null), tmr = useRef(null), timerRef = useRef(0);
 
   const cPos = useCallback(id => {
     const c = id % cols, r = Math.floor(id / cols);
@@ -325,7 +325,7 @@ function SolveScreen({ imgUrl, config, msg, sender, onReveal }) {
 
   useEffect(() => { scatter(); }, [scatter]);
   useEffect(() => {
-    tmr.current = setInterval(() => setTimer(t => t+1), 1000);
+    tmr.current = setInterval(() => setTimer(t => { timerRef.current = t+1; return t+1; }), 1000);
     return () => clearInterval(tmr.current);
   }, []);
 
@@ -333,12 +333,12 @@ function SolveScreen({ imgUrl, config, msg, sender, onReveal }) {
     e.preventDefault();
     const p = e.touches ? e.touches[0] : e;
     const pc = pcs.find(x => x.id === id);
-    if (!pc || pc.placed) return;
+    if (!pc) return;
     const rect = area.current.getBoundingClientRect();
     const nz = zTop + 1; setZTop(nz);
     dr.current = { id, oX: p.clientX-rect.left-pc.x, oY: p.clientY-rect.top-pc.y, sX: p.clientX, sY: p.clientY, moved: false };
     setDragId(id);
-    setPcs(prev => prev.map(x => x.id === id ? {...x, z: nz} : x));
+    setPcs(prev => prev.map(x => x.id === id ? {...x, z: nz, placed: false} : x));
   };
 
   const pMove = useCallback(e => {
@@ -363,11 +363,11 @@ function SolveScreen({ imgUrl, config, msg, sender, onReveal }) {
       });
       if (next.every(x => x.placed)) {
         clearInterval(tmr.current);
-        setTimeout(() => onReveal(timer), 500);
+        setTimeout(() => onReveal(timerRef.current), 500);
       }
       return next;
     });
-  }, [cPos, onReveal, timer]);
+  }, [cPos, onReveal]);
 
   const pUp = useCallback(() => {
     if (!dr.current) return;
