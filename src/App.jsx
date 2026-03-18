@@ -252,19 +252,21 @@ function CreateScreen({ onPreview }) {
             <div style={{marginTop:12,display:"flex",gap:8,justifyContent:"center",flexWrap:"wrap"}}>
               <button onClick={() => {
                 const txt = sender
-                  ? `${sender} har laget et puslespill til deg! Pusle bildet for å se hva det er 🧩\n${shareUrl}`
-                  : `Noen har laget et puslespill til deg! 🧩\n${shareUrl}`;
+                  ? `${sender} har laget en bildeoverraskelse til deg! 🧩✨ Trykk her for å åpne den: ${shareUrl}`
+                  : `Du har fått en bildeoverraskelse! 🧩✨ Trykk her for å åpne den: ${shareUrl}`;
                 window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`, "_blank");
               }} style={S.shr}>WhatsApp</button>
               <button onClick={() => {
-                const subj = sender ? `Puslespill fra ${sender} 🧩` : "Du har fått et puslespill! 🧩";
-                const body = `${sender||"Noen"} har laget et puslespill til deg!\n\nTrykk på lenken:\n${shareUrl}`;
+                const subj = sender ? `Bildeoverraskelse fra ${sender} 🧩✨` : "Du har fått en bildeoverraskelse! 🧩✨";
+                const body = sender
+                  ? `${sender} har laget en bildeoverraskelse til deg! 🧩✨\n\nTrykk her for å åpne den:\n${shareUrl}`
+                  : `Du har fått en bildeoverraskelse! 🧩✨\n\nTrykk her for å åpne den:\n${shareUrl}`;
                 window.open(`mailto:?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`);
               }} style={S.shr}>E-post</button>
               <button onClick={() => {
                 const txt = sender
-                  ? `${sender} har laget et puslespill til deg! 🧩 ${shareUrl}`
-                  : `Noen har laget et puslespill til deg! 🧩 ${shareUrl}`;
+                  ? `${sender} har laget en bildeoverraskelse til deg! 🧩✨ Trykk her for å åpne den: ${shareUrl}`
+                  : `Du har fått en bildeoverraskelse! 🧩✨ Trykk her for å åpne den: ${shareUrl}`;
                 window.open(`sms:?body=${encodeURIComponent(txt)}`);
               }} style={S.shr}>SMS</button>
             </div>
