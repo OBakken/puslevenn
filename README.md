@@ -1,4 +1,4 @@
-# 🧩 Puslespill.no
+# 🧩 Puslevenn
 
 Send et bilde som puslespill! Mottakeren må pusle bildet for å se hva det er.
 

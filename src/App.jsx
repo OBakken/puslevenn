@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { savePuzzle, loadPuzzle } from "./storage";
 
 /*══════════════════════════════════════════════════════════════
-  PUSLESPILL.NO — Send et bilde som puslespill
+  PUSLEVENN — Send et bilde som puslespill
 ══════════════════════════════════════════════════════════════*/
 
 const SNAP_DIST = 22;
@@ -164,7 +164,7 @@ function CreateScreen({ onPreview }) {
     <div style={S.dark}>
       <div style={S.box}>
         <div style={{textAlign:"center",marginBottom:28}}>
-          <div style={S.logo}>Puslespill<span style={{color:"#C8A56A"}}>.no</span></div>
+          <div style={S.logo}>Puslevenn</div>
           <div style={S.sub}>Send et bilde som puslespill</div>
         </div>
 
@@ -524,7 +524,7 @@ function RevealScreen({ imgUrl, msg, sender, time, onReset }) {
 function LoadingScreen({ text }) {
   return (
     <div style={{...S.dark,display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:12}}>
-      <div style={S.logo}>Puslespill<span style={{color:"#C8A56A"}}>.no</span></div>
+      <div style={S.logo}>Puslevenn</div>
       <div style={{color:"#9A8B74",fontSize:".85rem",fontWeight:600}}>{text || "Laster puslespillet..."}</div>
     </div>
   );

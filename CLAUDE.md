@@ -1,7 +1,7 @@
-# CLAUDE.md — Puslespill.no
+# CLAUDE.md — Puslevenn
 
 ## Hva er dette?
-En React-app der bruker laster opp et bilde, velger vanskelighetsgrad og sender en lenke til en mottaker. Mottaker må pusle bildet for å se det. Når puslespillet er løst, avsløres bildet med en personlig hilsen.
+En React-app (Puslevenn) der bruker laster opp et bilde, velger vanskelighetsgrad og sender en lenke til en mottaker. Mottaker må pusle bildet for å se det. Når puslespillet er løst, avsløres bildet med en personlig hilsen.
 
 ## Teknisk stack
 - **Vite** + **React** (JSX, ingen TypeScript)
