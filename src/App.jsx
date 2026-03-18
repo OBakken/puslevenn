@@ -374,7 +374,7 @@ function SolveScreen({ imgUrl, config, msg, sender, onReveal }) {
     const { id, moved } = dr.current;
     dr.current = null; setDragId(null);
     if (!moved && rotate) {
-      setPcs(prev => prev.map(x => x.id === id && !x.placed ? {...x, rot: (x.rot+90)%360} : x));
+      setPcs(prev => prev.map(x => x.id === id && !x.placed ? {...x, rot: x.rot+90} : x));
       setTimeout(() => trySnap(id), 50);
     } else {
       trySnap(id);
@@ -426,11 +426,11 @@ function SolveScreen({ imgUrl, config, msg, sender, onReveal }) {
         {/* Board */}
         <div style={{
           position:"absolute",left:bL,top:bT,width:boardW,height:boardH,
-          border:"2px dashed rgba(100,70,40,.16)",borderRadius:6,
-          background:"rgba(255,255,240,.05)",boxShadow:"inset 0 2px 12px rgba(0,0,0,.04)",pointerEvents:"none",
+          border:"2.5px dashed rgba(80,50,20,.45)",borderRadius:6,
+          background:"rgba(255,255,240,.12)",boxShadow:"inset 0 2px 16px rgba(0,0,0,.1), 0 0 0 1px rgba(80,50,20,.15)",pointerEvents:"none",
         }}>
-          {Array.from({length:cols-1}).map((_,i) => <div key={`v${i}`} style={{position:"absolute",left:(i+1)*cellW,top:0,width:1,height:"100%",background:"rgba(100,70,40,.05)"}}/>)}
-          {Array.from({length:rows-1}).map((_,i) => <div key={`h${i}`} style={{position:"absolute",top:(i+1)*cellH,left:0,height:1,width:"100%",background:"rgba(100,70,40,.05)"}}/>)}
+          {Array.from({length:cols-1}).map((_,i) => <div key={`v${i}`} style={{position:"absolute",left:(i+1)*cellW,top:0,width:1,height:"100%",background:"rgba(80,50,20,.12)"}}/>)}
+          {Array.from({length:rows-1}).map((_,i) => <div key={`h${i}`} style={{position:"absolute",top:(i+1)*cellH,left:0,height:1,width:"100%",background:"rgba(80,50,20,.12)"}}/>)}
         </div>
 
         {/* Pieces */}
