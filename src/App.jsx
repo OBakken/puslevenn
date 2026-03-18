@@ -312,7 +312,7 @@ function SolveScreen({ imgUrl, config, msg, sender, onReveal }) {
   const [zTop, setZTop] = useState(total + 1);
   const [uid, setUid] = useState(() => Math.random().toString(36).slice(2,8));
   const [timer, setTimer] = useState(0);
-  const dr = useRef(null), area = useRef(null), tmr = useRef(null), timerRef = useRef(0), lastRot = useRef(0);
+  const dr = useRef(null), area = useRef(null), tmr = useRef(null), timerRef = useRef(0), lastRot = useRef(0), lastTouch = useRef(0);
 
   const cPos = useCallback(id => {
     const c = id % cols, r = Math.floor(id / cols);
@@ -342,25 +342,28 @@ function SolveScreen({ imgUrl, config, msg, sender, onReveal }) {
 
   const pDown = (e, id) => {
     e.preventDefault();
-    if (e.target.setPointerCapture) e.target.setPointerCapture(e.pointerId);
+    const isTouch = e.type === "touchstart";
+    if (isTouch) lastTouch.current = Date.now();
+    else if (Date.now() - lastTouch.current < 400) return;
+    const p = isTouch ? e.touches[0] : e;
     const pc = pcs.find(x => x.id === id);
     if (!pc) return;
     const rect = area.current.getBoundingClientRect();
     const nz = zTop + 1; setZTop(nz);
-    const isTouch = e.pointerType === "touch";
-    dr.current = { id, oX: e.clientX-rect.left-pc.x, oY: e.clientY-rect.top-pc.y, sX: e.clientX, sY: e.clientY, moved: false, threshold: isTouch ? 15 : 5 };
+    dr.current = { id, oX: p.clientX-rect.left-pc.x, oY: p.clientY-rect.top-pc.y, sX: p.clientX, sY: p.clientY, moved: false, threshold: isTouch ? 15 : 5 };
     setDragId(id);
     setPcs(prev => prev.map(x => x.id === id ? {...x, z: nz, placed: false} : x));
   };
 
   const pMove = useCallback(e => {
     if (!dr.current) return; e.preventDefault();
-    if (Math.abs(e.clientX - dr.current.sX) > dr.current.threshold || Math.abs(e.clientY - dr.current.sY) > dr.current.threshold)
+    const p = e.touches ? e.touches[0] : e;
+    if (Math.abs(p.clientX - dr.current.sX) > dr.current.threshold || Math.abs(p.clientY - dr.current.sY) > dr.current.threshold)
       dr.current.moved = true;
     if (!dr.current.moved) return;
     const rect = area.current.getBoundingClientRect();
     const { id, oX, oY } = dr.current;
-    setPcs(prev => prev.map(x => x.id === id ? {...x, x: e.clientX-rect.left-oX, y: e.clientY-rect.top-oY} : x));
+    setPcs(prev => prev.map(x => x.id === id ? {...x, x: p.clientX-rect.left-oX, y: p.clientY-rect.top-oY} : x));
   }, []);
 
   const trySnap = useCallback(id => {
@@ -396,11 +399,16 @@ function SolveScreen({ imgUrl, config, msg, sender, onReveal }) {
   }, [trySnap, rotate]);
 
   useEffect(() => {
-    window.addEventListener("pointermove", pMove);
-    window.addEventListener("pointerup", pUp);
+    const o = { passive: false };
+    window.addEventListener("mousemove", pMove);
+    window.addEventListener("mouseup", pUp);
+    window.addEventListener("touchmove", pMove, o);
+    window.addEventListener("touchend", pUp);
     return () => {
-      window.removeEventListener("pointermove", pMove);
-      window.removeEventListener("pointerup", pUp);
+      window.removeEventListener("mousemove", pMove);
+      window.removeEventListener("mouseup", pUp);
+      window.removeEventListener("touchmove", pMove);
+      window.removeEventListener("touchend", pUp);
     };
   }, [pMove, pUp]);
 
@@ -449,7 +457,7 @@ function SolveScreen({ imgUrl, config, msg, sender, onReveal }) {
           const isDrag = dragId === p.id;
           const rotW = rotate && p.rot%360 !== 0 && !p.placed;
           return (
-            <div key={p.id} onPointerDown={e => pDown(e, p.id)}
+            <div key={p.id} onMouseDown={e => pDown(e, p.id)} onTouchStart={e => pDown(e, p.id)}
               style={{
                 position:"absolute", left:p.x, top:p.y, width:pw, height:ph,
                 zIndex: p.placed ? 1 : p.z+10,
