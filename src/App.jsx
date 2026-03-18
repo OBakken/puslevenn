@@ -423,11 +423,11 @@ function SolveScreen({ imgUrl, config, msg, sender, onReveal }) {
         {/* Board */}
         <div style={{
           position:"absolute",left:bL,top:bT,width:boardW,height:boardH,
-          border:"3px dashed rgba(60,35,10,.6)",borderRadius:6,
-          background:"rgba(255,255,240,.18)",boxShadow:"inset 0 2px 20px rgba(0,0,0,.15), 0 0 0 2px rgba(60,35,10,.25)",pointerEvents:"none",
+          border:"3px solid rgba(40,20,5,.7)",borderRadius:6,
+          background:"rgba(255,250,230,.25)",boxShadow:"inset 0 2px 24px rgba(0,0,0,.2), 0 0 0 3px rgba(40,20,5,.3), 0 4px 12px rgba(0,0,0,.15)",pointerEvents:"none",
         }}>
-          {Array.from({length:cols-1}).map((_,i) => <div key={`v${i}`} style={{position:"absolute",left:(i+1)*cellW,top:0,width:1,height:"100%",background:"rgba(60,35,10,.2)"}}/>)}
-          {Array.from({length:rows-1}).map((_,i) => <div key={`h${i}`} style={{position:"absolute",top:(i+1)*cellH,left:0,height:1,width:"100%",background:"rgba(60,35,10,.2)"}}/>)}
+          {Array.from({length:cols-1}).map((_,i) => <div key={`v${i}`} style={{position:"absolute",left:(i+1)*cellW,top:0,width:2,height:"100%",background:"rgba(40,20,5,.3)"}}/>)}
+          {Array.from({length:rows-1}).map((_,i) => <div key={`h${i}`} style={{position:"absolute",top:(i+1)*cellH,left:0,height:2,width:"100%",background:"rgba(40,20,5,.3)"}}/>)}
         </div>
 
         {/* Pieces */}
