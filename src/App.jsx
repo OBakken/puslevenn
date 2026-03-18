@@ -140,7 +140,7 @@ function CreateScreen({ onPreview }) {
     const id = await savePuzzle({ img: imgUrl, msg, sender, difficulty: preset });
     if (id) {
       const base = window.location.origin + window.location.pathname;
-      const url = `${base}#p=${id}`;
+      const url = `${base}?p=${id}`;
       setShareUrl(url);
       setShareId(id);
     } else {
@@ -149,18 +149,9 @@ function CreateScreen({ onPreview }) {
     setBusy(false);
   };
 
-  const shorten = async (url) => {
-    const endpoints = [
-      `https://is.gd/create.php?format=simple&url=${encodeURIComponent(url)}`,
-      `https://tinyurl.com/api-create.php?url=${encodeURIComponent(url)}`,
-    ];
-    for (const ep of endpoints) {
-      try {
-        const r = await fetch(ep);
-        if (r.ok) { const t = await r.text(); if (t.startsWith("http")) return t.trim(); }
-      } catch {}
-    }
-    return url;
+  const getShareUrl = () => {
+    const base = window.location.origin + window.location.pathname;
+    return `${base}?p=${shareId}`;
   };
 
   const copyLink = async () => {
@@ -264,26 +255,26 @@ function CreateScreen({ onPreview }) {
             }}>{copied ? "✓ Kopiert!" : "📋 Kopier lenke"}</button>
 
             <div style={{marginTop:12,display:"flex",gap:8,justifyContent:"center",flexWrap:"wrap"}}>
-              <button onClick={async () => {
-                const short = await shorten(shareUrl);
+              <button onClick={() => {
+                const url = getShareUrl();
                 const txt = sender
-                  ? `${sender} har laget en bildeoverraskelse til deg! 🧩✨ Trykk her for å åpne den: ${short}`
-                  : `Du har fått en bildeoverraskelse! 🧩✨ Trykk her for å åpne den: ${short}`;
+                  ? `${sender} har laget en bildeoverraskelse til deg! 🧩✨ Trykk her for å åpne den: ${url}`
+                  : `Du har fått en bildeoverraskelse! 🧩✨ Trykk her for å åpne den: ${url}`;
                 window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`, "_blank");
               }} style={S.shr}>WhatsApp</button>
-              <button onClick={async () => {
-                const short = await shorten(shareUrl);
+              <button onClick={() => {
+                const url = getShareUrl();
                 const subj = sender ? `Bildeoverraskelse fra ${sender} 🧩✨` : "Du har fått en bildeoverraskelse! 🧩✨";
                 const body = sender
-                  ? `${sender} har laget en bildeoverraskelse til deg! 🧩✨\n\nTrykk her for å åpne den:\n${short}`
-                  : `Du har fått en bildeoverraskelse! 🧩✨\n\nTrykk her for å åpne den:\n${short}`;
+                  ? `${sender} har laget en bildeoverraskelse til deg! 🧩✨\n\nTrykk her for å åpne den:\n${url}`
+                  : `Du har fått en bildeoverraskelse! 🧩✨\n\nTrykk her for å åpne den:\n${url}`;
                 window.open(`mailto:?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`);
               }} style={S.shr}>E-post</button>
-              <button onClick={async () => {
-                const short = await shorten(shareUrl);
+              <button onClick={() => {
+                const url = getShareUrl();
                 const txt = sender
-                  ? `${sender} har laget en bildeoverraskelse til deg! 🧩✨ Trykk her for å åpne den: ${short}`
-                  : `Du har fått en bildeoverraskelse! 🧩✨ Trykk her for å åpne den: ${short}`;
+                  ? `${sender} har laget en bildeoverraskelse til deg! 🧩✨ Trykk her for å åpne den: ${url}`
+                  : `Du har fått en bildeoverraskelse! 🧩✨ Trykk her for å åpne den: ${url}`;
                 const sep = /iPad|iPhone|iPod/.test(navigator.userAgent) ? "&" : "?";
                 window.open(`sms:${sep}body=${encodeURIComponent(txt)}`);
               }} style={S.shr}>SMS</button>
@@ -569,9 +560,9 @@ export default function App() {
   const [data, setData] = useState(null);
   const [time, setTime] = useState(0);
 
-  const loadFromHash = useCallback(async (hash) => {
-    if (!hash || !hash.startsWith("#p=")) { setScreen("create"); return; }
-    const id = hash.slice(3);
+  const loadPuzzleById = useCallback(async () => {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("p") || (window.location.hash.startsWith("#p=") ? window.location.hash.slice(3) : null);
     if (!id) { setScreen("create"); return; }
     setScreen("loading");
     const puzzle = await loadPuzzle(id);
@@ -579,9 +570,9 @@ export default function App() {
     else setScreen("error");
   }, []);
 
-  useEffect(() => { loadFromHash(window.location.hash); }, [loadFromHash]);
+  useEffect(() => { loadPuzzleById(); }, [loadPuzzleById]);
 
-  const goCreate = () => { window.location.hash = ""; setData(null); setScreen("create"); };
+  const goCreate = () => { window.history.replaceState(null, "", window.location.pathname); setData(null); setScreen("create"); };
 
   if (screen === "loading") return <LoadingScreen />;
   if (screen === "error") return <ErrorScreen onReset={goCreate} />;
