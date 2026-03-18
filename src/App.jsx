@@ -342,13 +342,13 @@ function SolveScreen({ imgUrl, config, msg, sender, onReveal }) {
 
   const pDown = (e, id) => {
     e.preventDefault();
-    const p = e;
+    if (e.target.setPointerCapture) e.target.setPointerCapture(e.pointerId);
     const pc = pcs.find(x => x.id === id);
     if (!pc) return;
     const rect = area.current.getBoundingClientRect();
     const nz = zTop + 1; setZTop(nz);
     const isTouch = e.pointerType === "touch";
-    dr.current = { id, oX: p.clientX-rect.left-pc.x, oY: p.clientY-rect.top-pc.y, sX: p.clientX, sY: p.clientY, moved: false, threshold: isTouch ? 15 : 5 };
+    dr.current = { id, oX: e.clientX-rect.left-pc.x, oY: e.clientY-rect.top-pc.y, sX: e.clientX, sY: e.clientY, moved: false, threshold: isTouch ? 15 : 5 };
     setDragId(id);
     setPcs(prev => prev.map(x => x.id === id ? {...x, z: nz, placed: false} : x));
   };
