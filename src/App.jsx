@@ -150,10 +150,16 @@ function CreateScreen({ onPreview }) {
   };
 
   const shorten = async (url) => {
-    try {
-      const r = await fetch(`https://is.gd/create.php?format=simple&url=${encodeURIComponent(url)}`);
-      if (r.ok) { const t = await r.text(); if (t.startsWith("http")) return t.trim(); }
-    } catch {}
+    const endpoints = [
+      `https://is.gd/create.php?format=simple&url=${encodeURIComponent(url)}`,
+      `https://tinyurl.com/api-create.php?url=${encodeURIComponent(url)}`,
+    ];
+    for (const ep of endpoints) {
+      try {
+        const r = await fetch(ep);
+        if (r.ok) { const t = await r.text(); if (t.startsWith("http")) return t.trim(); }
+      } catch {}
+    }
     return url;
   };
 
