@@ -301,7 +301,7 @@ function SolveScreen({ imgUrl, config, msg, sender, onReveal }) {
   const [zTop, setZTop] = useState(total + 1);
   const [uid, setUid] = useState(() => Math.random().toString(36).slice(2,8));
   const [timer, setTimer] = useState(0);
-  const dr = useRef(null), area = useRef(null), tmr = useRef(null), timerRef = useRef(0);
+  const dr = useRef(null), area = useRef(null), tmr = useRef(null), timerRef = useRef(0), lastTouch = useRef(0);
 
   const cPos = useCallback(id => {
     const c = id % cols, r = Math.floor(id / cols);
@@ -331,6 +331,8 @@ function SolveScreen({ imgUrl, config, msg, sender, onReveal }) {
 
   const pDown = (e, id) => {
     e.preventDefault();
+    if (e.touches) lastTouch.current = Date.now();
+    else if (Date.now() - lastTouch.current < 500) return;
     const p = e.touches ? e.touches[0] : e;
     const pc = pcs.find(x => x.id === id);
     if (!pc) return;
