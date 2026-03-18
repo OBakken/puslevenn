@@ -7,17 +7,14 @@
 import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, set, get } from 'firebase/database';
 
-// ┌─────────────────────────────────────────┐
-// │  SETT INN DINE FIREBASE-VERDIER HER:    │
-// └─────────────────────────────────────────┘
 const firebaseConfig = {
-  apiKey: "AIzaSyBNKTXbUOM1InLDDg_MGPoODJpALK2vHCo",
-  authDomain: "puslespill-ebd83.firebaseapp.com",
-  databaseURL: "https://puslespill-ebd83-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "puslespill-ebd83",
-  storageBucket: "puslespill-ebd83.firebasestorage.app",
-  messagingSenderId: "34182673628",
-  appId: "1:34182673628:web:8b151f0dc287f5ca3a7019"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
 let db = null;
@@ -46,18 +43,27 @@ function genId() {
   vanskelighetsgrad. Returnerer puzzle-ID.
 ──────────────────────────────────────────────*/
 export async function savePuzzle(data) {
-  const id = genId();
-  try {
-    const database = getDb();
-    await set(ref(database, `puzzles/${id}`), {
-      ...data,
-      createdAt: Date.now(),
-    });
-    return id;
-  } catch (e) {
-    console.error("Feil ved lagring:", e);
-    return null;
+  const database = getDb();
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const id = genId();
+    try {
+      const existing = await get(ref(database, `puzzles/${id}`));
+      if (existing.exists()) continue;
+      await set(ref(database, `puzzles/${id}`), {
+        img: data.img,
+        msg: String(data.msg || "").slice(0, 200),
+        sender: String(data.sender || "").slice(0, 40),
+        difficulty: Number(data.difficulty) || 0,
+        createdAt: Date.now(),
+      });
+      return id;
+    } catch (e) {
+      console.error("Feil ved lagring:", e);
+      return null;
+    }
   }
+  console.error("Kunne ikke generere unik ID etter 5 forsøk");
+  return null;
 }
 
 /*──────────────────────────────────────────────

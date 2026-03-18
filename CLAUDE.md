@@ -46,9 +46,11 @@ npm run preview      # Forhåndsvis produksjonsbygg
 
 ## Firebase-oppsett (må gjøres manuelt)
 1. Opprett prosjekt på https://console.firebase.google.com
-2. Aktiver Realtime Database (start i test mode)
-3. Kopier config-verdier inn i `src/storage.js`
-4. Se README.md for detaljer
+2. Aktiver Realtime Database (start i locked mode)
+3. Lim inn reglene fra `database.rules.json` i Firebase Console → Rules
+4. Kopier config-verdier inn i `.env` (se `.env.example`)
+5. For GitHub Actions deploy: legg verdiene som GitHub Secrets
+6. Se README.md for detaljer
 
 ## Regler for endringer
 - Hold all styling inline — ikke lag separate CSS-filer for komponenter

@@ -1,0 +1,24 @@
+{
+  "rules": {
+    "puzzles": {
+      "$puzzleId": {
+        ".read": true,
+        ".write": "!data.exists()",
+        ".validate": "newData.hasChildren(['img', 'msg', 'difficulty', 'createdAt'])
+                      && newData.child('img').isString()
+                      && newData.child('img').val().length < 200000
+                      && newData.child('msg').isString()
+                      && newData.child('msg').val().length <= 200
+                      && newData.child('sender').isString()
+                      && newData.child('sender').val().length <= 40
+                      && newData.child('difficulty').isNumber()
+                      && newData.child('difficulty').val() >= 0
+                      && newData.child('difficulty').val() <= 3
+                      && newData.child('createdAt').isNumber()
+                      && $puzzleId.length === 8"
+      }
+    },
+    ".read": false,
+    ".write": false
+  }
+}

@@ -26,9 +26,16 @@ Du trenger en Firebase Realtime Database for å lagre puslespilldata:
 1. Gå til [Firebase Console](https://console.firebase.google.com)
 2. Opprett et nytt prosjekt (slå av Google Analytics om ønskelig)
 3. Gå til **Build → Realtime Database** → **Create Database**
-4. Velg region (europe-west1 anbefalt) og start i **test mode**
-5. Gå til **Project Settings → General** og kopier config-verdiene
-6. Åpne `src/storage.js` og lim inn dine verdier
+4. Velg region (europe-west1 anbefalt) og start i **locked mode**
+5. Gå til **Realtime Database → Rules** og lim inn innholdet fra `database.rules.json`
+6. Gå til **Project Settings → General** og kopier config-verdiene
+7. Kopier `.env.example` til `.env` og fyll inn dine Firebase-verdier:
+
+```bash
+cp .env.example .env
+```
+
+Åpne `.env` og lim inn verdiene fra Firebase Console.
 
 ### 3. Kjør lokalt
 
@@ -40,7 +47,19 @@ npm run dev
 
 ### 4. Deploy til GitHub Pages
 
-Push til GitHub, og GitHub Actions deployer automatisk:
+Legg til Firebase-verdiene som **GitHub Secrets** (under repo **Settings → Secrets and variables → Actions**):
+
+| Secret | Beskrivelse |
+|--------|-------------|
+| `VITE_FIREBASE_API_KEY` | Firebase API-nøkkel |
+| `VITE_FIREBASE_AUTH_DOMAIN` | Firebase Auth-domene |
+| `VITE_FIREBASE_DATABASE_URL` | Realtime Database URL |
+| `VITE_FIREBASE_PROJECT_ID` | Firebase prosjekt-ID |
+| `VITE_FIREBASE_STORAGE_BUCKET` | Storage bucket |
+| `VITE_FIREBASE_MESSAGING_SENDER_ID` | Messaging sender-ID |
+| `VITE_FIREBASE_APP_ID` | Firebase app-ID |
+
+Push deretter til GitHub:
 
 ```bash
 git add .
