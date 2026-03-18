@@ -301,7 +301,7 @@ function SolveScreen({ imgUrl, config, msg, sender, onReveal }) {
   const [zTop, setZTop] = useState(total + 1);
   const [uid, setUid] = useState(() => Math.random().toString(36).slice(2,8));
   const [timer, setTimer] = useState(0);
-  const dr = useRef(null), area = useRef(null), tmr = useRef(null), timerRef = useRef(0), lastTouch = useRef(0);
+  const dr = useRef(null), area = useRef(null), tmr = useRef(null), timerRef = useRef(0);
 
   const cPos = useCallback(id => {
     const c = id % cols, r = Math.floor(id / cols);
@@ -331,9 +331,7 @@ function SolveScreen({ imgUrl, config, msg, sender, onReveal }) {
 
   const pDown = (e, id) => {
     e.preventDefault();
-    if (e.touches) lastTouch.current = Date.now();
-    else if (Date.now() - lastTouch.current < 500) return;
-    const p = e.touches ? e.touches[0] : e;
+    const p = e;
     const pc = pcs.find(x => x.id === id);
     if (!pc) return;
     const rect = area.current.getBoundingClientRect();
@@ -345,13 +343,12 @@ function SolveScreen({ imgUrl, config, msg, sender, onReveal }) {
 
   const pMove = useCallback(e => {
     if (!dr.current) return; e.preventDefault();
-    const p = e.touches ? e.touches[0] : e;
-    if (Math.abs(p.clientX - dr.current.sX) > 5 || Math.abs(p.clientY - dr.current.sY) > 5)
+    if (Math.abs(e.clientX - dr.current.sX) > 5 || Math.abs(e.clientY - dr.current.sY) > 5)
       dr.current.moved = true;
     if (!dr.current.moved) return;
     const rect = area.current.getBoundingClientRect();
     const { id, oX, oY } = dr.current;
-    setPcs(prev => prev.map(x => x.id === id ? {...x, x: p.clientX-rect.left-oX, y: p.clientY-rect.top-oY} : x));
+    setPcs(prev => prev.map(x => x.id === id ? {...x, x: e.clientX-rect.left-oX, y: e.clientY-rect.top-oY} : x));
   }, []);
 
   const trySnap = useCallback(id => {
@@ -384,16 +381,11 @@ function SolveScreen({ imgUrl, config, msg, sender, onReveal }) {
   }, [trySnap, rotate]);
 
   useEffect(() => {
-    const o = { passive: false };
-    window.addEventListener("mousemove", pMove);
-    window.addEventListener("mouseup", pUp);
-    window.addEventListener("touchmove", pMove, o);
-    window.addEventListener("touchend", pUp);
+    window.addEventListener("pointermove", pMove);
+    window.addEventListener("pointerup", pUp);
     return () => {
-      window.removeEventListener("mousemove", pMove);
-      window.removeEventListener("mouseup", pUp);
-      window.removeEventListener("touchmove", pMove);
-      window.removeEventListener("touchend", pUp);
+      window.removeEventListener("pointermove", pMove);
+      window.removeEventListener("pointerup", pUp);
     };
   }, [pMove, pUp]);
 
@@ -441,7 +433,7 @@ function SolveScreen({ imgUrl, config, msg, sender, onReveal }) {
           const isDrag = dragId === p.id;
           const rotW = rotate && p.rot%360 !== 0 && !p.placed;
           return (
-            <div key={p.id} onMouseDown={e => pDown(e, p.id)} onTouchStart={e => pDown(e, p.id)}
+            <div key={p.id} onPointerDown={e => pDown(e, p.id)}
               style={{
                 position:"absolute", left:p.x, top:p.y, width:pw, height:ph,
                 zIndex: p.placed ? 1 : p.z+10,
