@@ -347,14 +347,15 @@ function SolveScreen({ imgUrl, config, msg, sender, onReveal }) {
     if (!pc) return;
     const rect = area.current.getBoundingClientRect();
     const nz = zTop + 1; setZTop(nz);
-    dr.current = { id, oX: p.clientX-rect.left-pc.x, oY: p.clientY-rect.top-pc.y, sX: p.clientX, sY: p.clientY, moved: false };
+    const isTouch = e.pointerType === "touch";
+    dr.current = { id, oX: p.clientX-rect.left-pc.x, oY: p.clientY-rect.top-pc.y, sX: p.clientX, sY: p.clientY, moved: false, threshold: isTouch ? 15 : 5 };
     setDragId(id);
     setPcs(prev => prev.map(x => x.id === id ? {...x, z: nz, placed: false} : x));
   };
 
   const pMove = useCallback(e => {
     if (!dr.current) return; e.preventDefault();
-    if (Math.abs(e.clientX - dr.current.sX) > 5 || Math.abs(e.clientY - dr.current.sY) > 5)
+    if (Math.abs(e.clientX - dr.current.sX) > dr.current.threshold || Math.abs(e.clientY - dr.current.sY) > dr.current.threshold)
       dr.current.moved = true;
     if (!dr.current.moved) return;
     const rect = area.current.getBoundingClientRect();
