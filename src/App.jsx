@@ -317,7 +317,7 @@ function SolveScreen({ imgUrl, config, msg, sender, onReveal }) {
       id, col: id%cols, row: Math.floor(id/cols),
       x: bL + (i%ppr)*(boardW/ppr) + Math.random()*8-4,
       y: tY + Math.floor(i/ppr)*(cellH*.88+14) + Math.random()*6,
-      rot: rotate ? [0,45,90,135,180,225,270,315][Math.floor(Math.random()*8)] : 0,
+      rot: rotate ? [0,90,180,270][Math.floor(Math.random()*4)] : 0,
       placed: false, z: i+1,
     })));
     setZTop(total+1); setTimer(0);
@@ -374,7 +374,7 @@ function SolveScreen({ imgUrl, config, msg, sender, onReveal }) {
     const { id, moved } = dr.current;
     dr.current = null; setDragId(null);
     if (!moved && rotate) {
-      setPcs(prev => prev.map(x => x.id === id && !x.placed ? {...x, rot: x.rot+45} : x));
+      setPcs(prev => prev.map(x => x.id === id && !x.placed ? {...x, rot: x.rot+90} : x));
       setTimeout(() => trySnap(id), 50);
     } else {
       trySnap(id);
