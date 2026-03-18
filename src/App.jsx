@@ -149,6 +149,14 @@ function CreateScreen({ onPreview }) {
     setBusy(false);
   };
 
+  const shorten = async (url) => {
+    try {
+      const r = await fetch(`https://is.gd/create.php?format=simple&url=${encodeURIComponent(url)}`);
+      if (r.ok) { const t = await r.text(); if (t.startsWith("http")) return t.trim(); }
+    } catch {}
+    return url;
+  };
+
   const copyLink = async () => {
     if (!shareUrl) return;
     try { await navigator.clipboard.writeText(shareUrl); }
@@ -250,23 +258,26 @@ function CreateScreen({ onPreview }) {
             }}>{copied ? "✓ Kopiert!" : "📋 Kopier lenke"}</button>
 
             <div style={{marginTop:12,display:"flex",gap:8,justifyContent:"center",flexWrap:"wrap"}}>
-              <button onClick={() => {
+              <button onClick={async () => {
+                const short = await shorten(shareUrl);
                 const txt = sender
-                  ? `${sender} har laget en bildeoverraskelse til deg! 🧩✨ Trykk her for å åpne den: ${shareUrl}`
-                  : `Du har fått en bildeoverraskelse! 🧩✨ Trykk her for å åpne den: ${shareUrl}`;
+                  ? `${sender} har laget en bildeoverraskelse til deg! 🧩✨ Trykk her for å åpne den: ${short}`
+                  : `Du har fått en bildeoverraskelse! 🧩✨ Trykk her for å åpne den: ${short}`;
                 window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`, "_blank");
               }} style={S.shr}>WhatsApp</button>
-              <button onClick={() => {
+              <button onClick={async () => {
+                const short = await shorten(shareUrl);
                 const subj = sender ? `Bildeoverraskelse fra ${sender} 🧩✨` : "Du har fått en bildeoverraskelse! 🧩✨";
                 const body = sender
-                  ? `${sender} har laget en bildeoverraskelse til deg! 🧩✨\n\nTrykk her for å åpne den:\n${shareUrl}`
-                  : `Du har fått en bildeoverraskelse! 🧩✨\n\nTrykk her for å åpne den:\n${shareUrl}`;
+                  ? `${sender} har laget en bildeoverraskelse til deg! 🧩✨\n\nTrykk her for å åpne den:\n${short}`
+                  : `Du har fått en bildeoverraskelse! 🧩✨\n\nTrykk her for å åpne den:\n${short}`;
                 window.open(`mailto:?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`);
               }} style={S.shr}>E-post</button>
-              <button onClick={() => {
+              <button onClick={async () => {
+                const short = await shorten(shareUrl);
                 const txt = sender
-                  ? `${sender} har laget en bildeoverraskelse til deg! 🧩✨ Trykk her for å åpne den: ${shareUrl}`
-                  : `Du har fått en bildeoverraskelse! 🧩✨ Trykk her for å åpne den: ${shareUrl}`;
+                  ? `${sender} har laget en bildeoverraskelse til deg! 🧩✨ Trykk her for å åpne den: ${short}`
+                  : `Du har fått en bildeoverraskelse! 🧩✨ Trykk her for å åpne den: ${short}`;
                 const sep = /iPad|iPhone|iPod/.test(navigator.userAgent) ? "&" : "?";
                 window.open(`sms:${sep}body=${encodeURIComponent(txt)}`);
               }} style={S.shr}>SMS</button>
