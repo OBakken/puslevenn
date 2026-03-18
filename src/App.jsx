@@ -301,7 +301,7 @@ function SolveScreen({ imgUrl, config, msg, sender, onReveal }) {
   const [zTop, setZTop] = useState(total + 1);
   const [uid, setUid] = useState(() => Math.random().toString(36).slice(2,8));
   const [timer, setTimer] = useState(0);
-  const dr = useRef(null), area = useRef(null), tmr = useRef(null), timerRef = useRef(0);
+  const dr = useRef(null), area = useRef(null), tmr = useRef(null), timerRef = useRef(0), lastRot = useRef(0);
 
   const cPos = useCallback(id => {
     const c = id % cols, r = Math.floor(id / cols);
@@ -373,6 +373,9 @@ function SolveScreen({ imgUrl, config, msg, sender, onReveal }) {
     const { id, moved } = dr.current;
     dr.current = null; setDragId(null);
     if (!moved && rotate) {
+      const now = Date.now();
+      if (now - lastRot.current < 300) return;
+      lastRot.current = now;
       setPcs(prev => prev.map(x => x.id === id && !x.placed ? {...x, rot: x.rot+90} : x));
       setTimeout(() => trySnap(id), 50);
     } else {
